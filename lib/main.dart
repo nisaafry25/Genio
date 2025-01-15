@@ -60,7 +60,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CCTV DATA INSPIRASI'),
+        title: Text(
+          'CCTV DATA INSPIRASI',
+          style: TextStyle(
+            fontSize: 18, // Ukuran teks diperkecil
+            fontWeight: FontWeight.bold, // Teks dibuat bold (opsional)
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
