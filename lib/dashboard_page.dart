@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
-import 'package:google_fonts/google_fonts.dart';  // Import Google Fonts
 
 class DashboardPage extends StatelessWidget {
   @override
@@ -9,12 +8,9 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/logo_genio_remove_bg.png', height: 40),
-            SizedBox(width: 8),
-            Text(
-              'Dashboard',
-              style: GoogleFonts.lato(),  // Ganti font dengan Google Fonts
-            ),
+            Image.asset('assets/images/logo_genio_remove_bg.png', height: 40), // Tambahkan logo Genio
+            SizedBox(width: 8), // Ruang antar logo dan teks
+            Text('HOME'),
           ],
         ),
       ),
