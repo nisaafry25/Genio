@@ -21,7 +21,7 @@ class DashboardPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Welcome to Genio Dashboard!',
+                'Welcome to Genio!!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
