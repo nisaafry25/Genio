@@ -307,50 +307,125 @@ class MyAccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Informasi Akun'),
+        title: Text('My Account'),
         backgroundColor: Colors.teal,
       ),
-      body: Container(
+      body: ListView(
         padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 5, blurRadius: 10)],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.account_circle, size: 50, color: Colors.teal),
-            SizedBox(height: 16),
-            Text(
-              'Profil Pengguna',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+        children: [
+          // Judul
+          Text(
+            'My Account',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.teal),
+          ),
+          SizedBox(height: 20),
+
+          // Profil Pengguna
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.account_circle, color: Colors.teal),
+              title: Text('Profil Pengguna'),
+              subtitle: Text('Lihat dan edit profil pengguna Anda.'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileDetailsPage()),
+                );
+              },
             ),
-            SizedBox(height: 8),
-            Text('Lihat dan edit profil pengguna Anda.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
-            SizedBox(height: 16),
-            Divider(),
-            SizedBox(height: 16),
-            Text(
-              'Ubah Detail Akun',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+          ),
+          SizedBox(height: 10),
+
+          // Ubah Detail Akun
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.edit, color: Colors.teal),
+              title: Text('Ubah Detail Akun'),
+              subtitle: Text('Ganti informasi seperti nama, email, nomor telepon, dll.'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditDetailsPage()),
+                );
+              },
             ),
-            SizedBox(height: 8),
-            Text('Ganti informasi pribadi seperti nama, email, nomor telepon, dll.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
-            SizedBox(height: 16),
-            Divider(),
-            SizedBox(height: 16),
-            Text(
-              'Pengaturan Keamanan',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+          ),
+          SizedBox(height: 10),
+
+          // Pengaturan Keamanan
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.security, color: Colors.teal),
+              title: Text('Pengaturan Keamanan'),
+              subtitle: Text(
+                  'Atur kata sandi, verifikasi dua faktor, dan pengaturan biometrik (Face ID/Touch ID).'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SecuritySettingsPage()),
+                );
+              },
             ),
-            SizedBox(height: 8),
-            Text('Atur kata sandi, pengaturan keamanan seperti verifikasi dua faktor, dan pengaturan biometrik (Face ID atau Touch ID).', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
+
+// Halaman Profil Pengguna
+class ProfileDetailsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profil Pengguna'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Center(
+        child: Text('Halaman Profil Pengguna'),
+      ),
+    );
+  }
+}
+
+// Halaman Ubah Detail Akun
+class EditDetailsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ubah Detail Akun'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Center(
+        child: Text('Halaman Ubah Detail Akun'),
+      ),
+    );
+  }
+}
+
+// Halaman Pengaturan Keamanan
+class SecuritySettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Pengaturan Keamanan'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Center(
+        child: Text('Halaman Pengaturan Keamanan'),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MyAccountPage(),
+  ));
 }
 
 class FaceIDPage extends StatelessWidget {
