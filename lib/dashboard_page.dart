@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class DashboardPage extends StatelessWidget {
   @override
@@ -358,7 +360,7 @@ class MyAccountPage extends StatelessWidget {
               leading: Icon(Icons.security, color: Colors.teal),
               title: Text('Pengaturan Keamanan'),
               subtitle: Text(
-                  'Atur kata sandi, verifikasi dua faktor, dan pengaturan biometrik (Face ID/Touch ID).'),
+                  'Atur kata sandi'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -374,7 +376,28 @@ class MyAccountPage extends StatelessWidget {
 }
 
 // Halaman Profil Pengguna
-class ProfileDetailsPage extends StatelessWidget {
+class ProfileDetailsPage extends StatefulWidget {
+  @override
+  _ProfileDetailsPageState createState() => _ProfileDetailsPageState();
+}
+
+class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
+  String name = "John Doe";
+  String email = "johndoe@example.com";
+  String phone = "+628123456789";
+  File? _image;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -382,31 +405,136 @@ class ProfileDetailsPage extends StatelessWidget {
         title: Text('Profil Pengguna'),
         backgroundColor: Colors.teal,
       ),
-      body: Center(
-        child: Text('Halaman Profil Pengguna'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: _image != null ? FileImage(_image!) : null,
+                child: _image == null
+                    ? Icon(Icons.account_circle, size: 50, color: Colors.teal)
+                    : null,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text('Nama: $name', style: TextStyle(fontSize: 18)),
+            Text('Email: $email', style: TextStyle(fontSize: 18)),
+            Text('Telepon: $phone', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditDetailsPage()),
+                );
+              },
+              child: Text('Edit Profil'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 // Halaman Ubah Detail Akun
-class EditDetailsPage extends StatelessWidget {
+class EditDetailsPage extends StatefulWidget {
+  @override
+  _EditDetailsPageState createState() => _EditDetailsPageState();
+}
+
+class _EditDetailsPageState extends State<EditDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  void _saveProfile() {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Proses penyimpanan data
+      Navigator.pop(context); // Kembali ke halaman sebelumnya setelah menyimpan
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ubah Detail Akun'),
+        title: Text('Edit Profil'),
         backgroundColor: Colors.teal,
       ),
-      body: Center(
-        child: Text('Halaman Ubah Detail Akun'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Nama'),
+                validator: (value) => value?.isEmpty ?? true ? 'Nama tidak boleh kosong' : null,
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: (value) => value?.isEmpty ?? true ? 'Email tidak boleh kosong' : null,
+              ),
+              TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'Telepon'),
+                validator: (value) => value?.isEmpty ?? true ? 'Telepon tidak boleh kosong' : null,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveProfile,
+                child: Text('Simpan'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 // Halaman Pengaturan Keamanan
-class SecuritySettingsPage extends StatelessWidget {
+class SecuritySettingsPage extends StatefulWidget {
+  @override
+  _SecuritySettingsPageState createState() => _SecuritySettingsPageState();
+}
+
+class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    super.dispose();
+  }
+
+  void _changePassword() {
+    if (_oldPasswordController.text.isNotEmpty && _newPasswordController.text.isNotEmpty) {
+      print("Kata sandi baru disimpan");
+      Navigator.pop(context); // Kembali ke halaman sebelumnya setelah mengganti kata sandi
+    } else {
+      print("Silakan masukkan kata sandi lama dan kata sandi baru");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -414,13 +542,31 @@ class SecuritySettingsPage extends StatelessWidget {
         title: Text('Pengaturan Keamanan'),
         backgroundColor: Colors.teal,
       ),
-      body: Center(
-        child: Text('Halaman Pengaturan Keamanan'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _oldPasswordController,
+              decoration: InputDecoration(labelText: 'Kata Sandi Lama'),
+              obscureText: true,
+            ),
+            TextFormField(
+              controller: _newPasswordController,
+              decoration: InputDecoration(labelText: 'Kata Sandi Baru'),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _changePassword,
+              child: Text('Ganti Kata Sandi'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -440,7 +586,13 @@ class FaceIDPage extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 5, blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 10,
+            ),
+          ],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -449,20 +601,46 @@ class FaceIDPage extends StatelessWidget {
             Icon(Icons.security, size: 50, color: Colors.teal),
             SizedBox(height: 16),
             Text(
-              'Login dengan Face ID atau Touch ID',
+              'Login dengan Face ID',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 8),
-            Text('Gunakan fitur keamanan biometrik untuk masuk dengan Face ID atau Touch ID.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            Text(
+              'Gunakan fitur keamanan biometrik untuk masuk dengan Face ID.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Simulasi mengaktifkan Face ID
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Face ID diaktifkan!')),
+                );
+              },
+              child: Text('Aktifkan Face ID'),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Simulasi menonaktifkan Face ID
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Face ID dinonaktifkan!')),
+                );
+              },
+              child: Text('Nonaktifkan Face ID'),
+            ),
             SizedBox(height: 16),
             Divider(),
             SizedBox(height: 16),
             Text(
-              'Konfigurasi Pengaturan Keamanan Biometrik',
+              'Panduan Penggunaan Face ID',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 8),
-            Text('Sesuaikan pengaturan keamanan menggunakan biometrik untuk melindungi akun Anda.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            Text(
+              'Informasi lengkap mengenai cara menggunakan fitur Face ID.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
           ],
         ),
       ),
@@ -476,7 +654,7 @@ class TwoFactorPage extends StatefulWidget {
 }
 
 class _TwoFactorPageState extends State<TwoFactorPage> {
-  bool isChecked = true; // Inisialisasi status checkbox
+  bool isChecked = false; // Inisialisasi status checkbox
 
   @override
   Widget build(BuildContext context) {
@@ -489,7 +667,13 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 5, blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 10,
+            ),
+          ],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -502,7 +686,10 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 8),
-            Text('Pilih untuk mengaktifkan atau menonaktifkan fitur verifikasi dua faktor.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            Text(
+              'Pilih untuk mengaktifkan atau menonaktifkan fitur verifikasi dua faktor.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
             SizedBox(height: 16),
             Row(
               children: [
@@ -512,9 +699,15 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                     setState(() {
                       isChecked = value ?? false;
                     });
+                    // Show a message based on the checkbox state
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(isChecked ? 'Two-Factor Authentication diaktifkan!' : 'Two-Factor Authentication dinonaktifkan!')),
+                    );
                   },
                 ),
-                Text('Aktifkan Two-Factor Authentication'),
+                Expanded(
+                  child: Text('Aktifkan Two-Factor Authentication'),
+                ),
               ],
             ),
             SizedBox(height: 16),
@@ -525,14 +718,20 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 8),
-            Text('Informasi lengkap mengenai cara menggunakan fitur Two-Factor Authentication.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            Text(
+              'Informasi lengkap mengenai cara menggunakan fitur Two-Factor Authentication.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
             SizedBox(height: 16),
             Text(
               'Troubleshooting & Bantuan',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 8),
-            Text('Solusi umum dan bantuan jika Anda mengalami masalah dengan Two-Factor Authentication.', style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            Text(
+              'Solusi umum dan bantuan jika Anda mengalami masalah dengan Two-Factor Authentication.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
           ],
         ),
       ),
