@@ -22,6 +22,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  video_player: ^2.3.0
+  image_picker: ^0.8.4+3
 
   # The "flutter_lints" package contains a set of recommended lints.
   flutter_lints: ^5.0.0
@@ -34,6 +36,12 @@ flutter:
   # Add assets to your application.
   assets:
     - assets/images/logo_genio_remove_bg.png
+    - assets/videos/CCTV Malioboro Yogyakarta _ 14 September 2024.mp4
+    - assets/videos/CCTV Nol Kilometer Yogyakarta _ 14 September 2024.mp4
+    - assets/videos/videoplayback (1).mp4
+    - assets/videos/videoplayback (2).mp4
+    - assets/videos/videoplayback (3).mp4
+    - assets/videos/videoplayback.mp4
 
   # To add custom fonts, use the following format:
   # fonts:
