@@ -2,16 +2,129 @@ import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  late List<VideoPlayerController> _controllers;
+  late List<Map<String, String>> videoData; // Menyimpan data video dan deskripsi
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = [];
+    videoData = [
+      {
+        'path': 'assets/videos/videoplayback.mp4',
+        'title': 'CCTV Video 1',
+        'description': 'Monitoring Jalan Malioboro Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/videoplayback.mp4',
+        'title': 'CCTV Video 2',
+        'description': 'CCTV di Pusat Kota Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/CCTV Malioboro Yogyakarta _ 14 September 2024.mp4',
+        'title': 'CCTV Malioboro Yogyakarta',
+        'description': 'Melihat kondisi lalu lintas di Malioboro'
+      },
+      {
+        'path': 'assets/videos/CCTV Nol Kilometer Yogyakarta _ 14 September 2024.mp4',
+        'title': 'CCTV Nol Kilometer Yogyakarta',
+        'description': 'Memantau lalu lintas di titik Nol Kilometer Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/videoplayback.mp4',
+        'title': 'CCTV Video 3',
+        'description': 'Rekaman aktivitas di daerah sekitar Alun-Alun Utara'
+      },
+      {
+        'path': 'assets/videos/videoplayback.mp4',
+        'title': 'CCTV Video 4',
+        'description': 'Pantauan lalu lintas di sekitar Tugu Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/videoplayback (1).mp4',
+        'title': 'CCTV Video 5',
+        'description': 'Rekaman jalan raya di Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/videoplayback (2).mp4',
+        'title': 'CCTV Video 6',
+        'description': 'CCTV di persimpangan utama Yogyakarta'
+      },
+      {
+        'path': 'assets/videos/videoplayback (3).mp4',
+        'title': 'CCTV Video 7',
+        'description': 'Pantauan keramaian di Pasar Beringharjo'
+      },
+      {
+        'path': 'assets/videos/videoplayback.mp4',
+        'title': 'CCTV Video 8',
+        'description': 'Memantau kegiatan di area parkir Yogyakarta'
+      },
+    ];
+
+    // Inisialisasi controller untuk setiap video
+    for (var video in videoData) {
+      _controllers.add(
+        VideoPlayerController.asset(video['path']!)
+          ..initialize().then((_) {
+            setState(() {});
+          }).catchError((error) {
+            print("Error initializing video ${video['path']}: $error");
+          }),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navigasi berdasarkan tab yang dipilih
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardPage()),
+      );
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SearchPage(videoData: videoData)), // Pass data to SearchPage
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/logo_genio_remove_bg.png', height: 40), // Tambahkan logo Genio
-            SizedBox(width: 8), // Ruang antar logo dan teks
+            Image.asset('assets/images/logo_genio_remove_bg.png', height: 40),
+            SizedBox(width: 8),
             Text('HOME'),
           ],
         ),
@@ -30,26 +143,68 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
+              // Daftar video lainnya
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 10, // Replace with API data length
+                itemCount: _controllers.length, // Jumlah video
                 itemBuilder: (context, index) {
                   return Card(
                     margin: EdgeInsets.only(bottom: 16),
-                    elevation: 4, // Tambahkan efek bayangan
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Padding tambahan
-                      leading: Icon(Icons.videocam, color: Colors.blue),
-                      title: Text(
-                        'CCTV Video $index', // Replace with API data
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text('Details about video $index'), // Replace dengan API data
-                      trailing: Icon(Icons.play_arrow, color: Colors.blue),
-                      onTap: () {
-                        print('Play video $index');
-                      },
+                    elevation: 4,
+                    child: Column(
+                      children: [
+                        AspectRatio(
+                          aspectRatio: _controllers[index].value.isInitialized
+                              ? _controllers[index].value.aspectRatio
+                              : 1.0,
+                          child: _controllers[index].value.isInitialized
+                              ? VideoPlayer(_controllers[index])
+                              : Center(child: CircularProgressIndicator()),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: Icon(Icons.videocam, color: Colors.blue),
+                          title: Text(videoData[index]['title']!),
+                          subtitle: Text(videoData[index]['description']!),
+                          trailing: Icon(Icons.play_arrow, color: Colors.blue),
+                          onTap: () {
+                            // Memutar video saat diklik
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Play ${videoData[index]['title']}'),
+                                  content: _controllers[index].value.isInitialized
+                                      ? AspectRatio(
+                                    aspectRatio: _controllers[index].value.aspectRatio,
+                                    child: VideoPlayer(_controllers[index]),
+                                  )
+                                      : Center(child: CircularProgressIndicator()),
+                                  actions: [
+                                    IconButton(
+                                      icon: Icon(Icons.play_arrow),
+                                      onPressed: () {
+                                        setState(() {
+                                          _controllers[index].play(); // Memulai pemutaran video
+                                        });
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.pause),
+                                      onPressed: () {
+                                        setState(() {
+                                          _controllers[index].pause(); // Menjeda video
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -59,6 +214,8 @@ class DashboardPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -73,82 +230,104 @@ class DashboardPage extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DashboardPage()),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SearchPage()),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
 
 class SearchPage extends StatefulWidget {
+  final List<Map<String, String>> videoData;
+
+  SearchPage({required this.videoData});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<String> allData = List.generate(20, (index) => 'CCTV Video $index'); // Data awal
-  List<String> searchResults = [];
+  late List<Map<String, String>> searchResults;
+  late VideoPlayerController _controller;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    searchResults = allData; // Awalnya, tampilkan semua data
+    searchResults = widget.videoData; // Awalnya, tampilkan semua video
   }
 
   void updateSearchResults(String query) {
     setState(() {
       if (query.isEmpty) {
-        searchResults = allData;
+        searchResults = widget.videoData;
       } else {
-        searchResults = allData
-            .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+        searchResults = widget.videoData
+            .where((item) => item['title']!.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
+  }
+
+  void _playVideo(Map<String, String> video) async {
+    // Mencari indeks video berdasarkan judul
+    int index = widget.videoData.indexOf(video);
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Inisialisasi controller untuk video yang dipilih
+    _controller = VideoPlayerController.asset(video['path']!)
+      ..initialize().then((_) {
+        setState(() {
+          isLoading = false;
+        });
+        _controller.play(); // Memulai pemutaran video setelah inisialisasi selesai
+      }).catchError((error) {
+        print("Error initializing video: $error");
+        setState(() {
+          isLoading = false;
+        });
+      });
+
+    // Menampilkan dialog untuk memutar video
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Play ${video['title']}'),
+          content: isLoading
+              ? Center(child: CircularProgressIndicator()) // Spinner saat video loading
+              : AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: VideoPlayer(_controller),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.play_arrow),
+              onPressed: () {
+                setState(() {
+                  _controller.play(); // Memulai pemutaran video
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.pause),
+              onPressed: () {
+                setState(() {
+                  _controller.pause(); // Menjeda video
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Pastikan controller dibersihkan
+    super.dispose();
   }
 
   @override
@@ -177,8 +356,12 @@ class _SearchPageState extends State<SearchPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Icon(Icons.videocam),
-                    title: Text(searchResults[index]),
-                    subtitle: Text('Details for ${searchResults[index]}'),
+                    title: Text(searchResults[index]['title']!),
+                    subtitle: Text(searchResults[index]['description']!),
+                    onTap: () {
+                      // Ketika video di klik, tampilkan dialog untuk memutar video
+                      _playVideo(searchResults[index]);
+                    },
                   );
                 },
               ),
