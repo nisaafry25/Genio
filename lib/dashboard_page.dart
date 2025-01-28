@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -569,18 +567,6 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   String name = "John Doe";
   String email = "johndoe@example.com";
   String phone = "+628123456789";
-  File? _image;
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -594,15 +580,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: _image != null ? FileImage(_image!) : null,
-                child: _image == null
-                    ? Icon(Icons.account_circle, size: 50, color: Colors.teal)
-                    : null,
-              ),
+            CircleAvatar(
+              radius: 50,
+              child: Icon(Icons.account_circle, size: 50, color: Colors.teal),
             ),
             SizedBox(height: 16),
             Text('Nama: $name', style: TextStyle(fontSize: 18)),
@@ -626,26 +606,13 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
 }
 
 // Halaman Ubah Detail Akun
-class EditDetailsPage extends StatefulWidget {
-  @override
-  _EditDetailsPageState createState() => _EditDetailsPageState();
-}
-
-class _EditDetailsPageState extends State<EditDetailsPage> {
+class EditDetailsPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  void _saveProfile() {
+  void _saveProfile(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       // Proses penyimpanan data
       Navigator.pop(context); // Kembali ke halaman sebelumnya setelah menyimpan
@@ -682,7 +649,7 @@ class _EditDetailsPageState extends State<EditDetailsPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _saveProfile,
+                onPressed: () => _saveProfile(context),
                 child: Text('Simpan'),
               ),
             ],
