@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -92,7 +90,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
     super.dispose();
   }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
