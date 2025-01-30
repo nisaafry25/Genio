@@ -48,6 +48,10 @@ class AnalisisPage extends StatelessWidget {
               'Hasil analisis video berdasarkan data dari AI dan algoritma pemrosesan citra.',
               style: TextStyle(fontSize: 16),
             ),
+            SizedBox(height: 16),
+            Expanded(
+              child: ScrollableGraph(),
+            ),
           ],
         ),
       ),
@@ -89,5 +93,72 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       child: VideoPlayer(_controller),
     )
         : Center(child: CircularProgressIndicator());
+  }
+}
+
+class ScrollableGraph extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        Container(
+          height: 200,
+          child: LineChartSample1(),
+        ),
+        SizedBox(height: 16),
+        Container(
+          height: 200,
+          child: BarChartSample1(),
+        ),
+        SizedBox(height: 16),
+        Container(
+          height: 200,
+          child: PieChartSample1(),
+        ),
+      ],
+    );
+  }
+}
+
+// Contoh grafik sederhana menggunakan fl_chart
+class LineChartSample1 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Text('Line Chart Placeholder'),
+    );
+  }
+}
+
+class BarChartSample1 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Text('Bar Chart Placeholder'),
+    );
+  }
+}
+
+class PieChartSample1 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Text('Pie Chart Placeholder'),
+    );
   }
 }
