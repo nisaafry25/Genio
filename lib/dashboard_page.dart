@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:genio/main.dart';
 import 'package:video_player/video_player.dart';
+import 'package:genio/analisis_page.dart';
+
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -159,6 +161,22 @@ class _DashboardPageState extends State<DashboardPage> {
                               : Center(child: CircularProgressIndicator()),
                         ),
                         ListTile(
+                          leading: Icon(Icons.analytics, color: Colors.green),
+                          title: Text('Lihat Analisis'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AnalisisPage(
+                                  videoTitle: videoData[index]['title']!,
+                                  videoPath: videoData[index]['path']!,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        ListTile(
                           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           leading: Icon(Icons.videocam, color: Colors.blue),
                           title: Text(videoData[index]['title']!),
@@ -209,6 +227,8 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
+
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

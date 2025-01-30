@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dashboard_page.dart'; // Import halaman dashboard
+import 'package:genio/dashboard_page.dart';
 import 'forgot_password_page.dart'; // Import halaman lupa password
+import 'analisis_page.dart';
+
 
 void main() {
   runApp(GenioApp());

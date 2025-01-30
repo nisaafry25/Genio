@@ -22,9 +22,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  cupertino_icons: ^1.0.8
   video_player: ^2.3.0
-
-
   # The "flutter_lints" package contains a set of recommended lints.
   flutter_lints: ^5.0.0
 
