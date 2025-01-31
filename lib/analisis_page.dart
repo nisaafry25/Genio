@@ -13,7 +13,7 @@ class AnalisisPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Analisis Video'),
+        title: Text('Analisis CCTV'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -41,19 +41,49 @@ class AnalisisPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               Text(
-                'Analisis Data',
+                'Analisis Data CCTV',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Text(
-                'Hasil analisis video berdasarkan data dari AI dan algoritma pemrosesan citra.',
+                'Hasil analisis video CCTV berdasarkan data dari AI dan algoritma pemrosesan citra. Analisis ini membantu dalam memahami pola aktivitas dan mendeteksi anomali.',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 16),
+              Text(
+                'Grafik Garis: Tren Aktivitas Harian',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Grafik ini menunjukkan tren aktivitas yang terekam oleh CCTV dari waktu ke waktu. Dengan grafik ini, Anda dapat melihat puncak aktivitas dan waktu-waktu yang tenang.',
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 8),
               CustomLineChart(),
               SizedBox(height: 16),
+              Text(
+                'Grafik Batang: Perbandingan Aktivitas Mingguan',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Grafik ini membandingkan aktivitas yang terekam oleh CCTV dalam bentuk batang. Anda dapat melihat perbandingan aktivitas antara hari-hari dalam seminggu.',
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 8),
               CustomBarChart(),
               SizedBox(height: 16),
+              Text(
+                'Grafik Pie: Distribusi Jenis Aktivitas',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Grafik ini menunjukkan distribusi jenis aktivitas yang terekam oleh CCTV dalam bentuk persentase. Anda dapat melihat proporsi masing-masing jenis aktivitas.',
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 8),
               CustomPieChart(),
             ],
           ),
@@ -108,6 +138,11 @@ class CustomLineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: CustomPaint(
         size: Size(double.infinity, 200),
         painter: LineChartPainter(data),
@@ -173,6 +208,11 @@ class CustomBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: CustomPaint(
         size: Size(double.infinity, 200),
         painter: BarChartPainter(data),
@@ -201,7 +241,7 @@ class BarChartPainter extends CustomPainter {
       double y = size.height - data[i] * yScale;
 
       canvas.drawRect(
-        Rect.fromLTWH(x, y, barWidth - 10, size.height - y),
+        Rect.fromLTWH(x + 5, y, barWidth - 10, size.height - y),
         paint,
       );
     }
@@ -221,6 +261,11 @@ class CustomPieChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: CustomPaint(
         size: Size(double.infinity, 200),
         painter: PieChartPainter(data),
