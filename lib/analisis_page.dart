@@ -24,35 +24,39 @@ class AnalisisPage extends StatelessWidget {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              videoTitle,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Container(
-              height: 200,
-              child: VideoPlayerWidget(videoPath: videoPath),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Analisis Data',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Hasil analisis video berdasarkan data dari AI dan algoritma pemrosesan citra.',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: ScrollableGraph(),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                videoTitle,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Container(
+                height: 200,
+                child: VideoPlayerWidget(videoPath: videoPath),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Analisis Data',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Hasil analisis video berdasarkan data dari AI dan algoritma pemrosesan citra.',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              CustomLineChart(),
+              SizedBox(height: 16),
+              CustomBarChart(),
+              SizedBox(height: 16),
+              CustomPieChart(),
+            ],
+          ),
         ),
       ),
     );
@@ -89,76 +93,173 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Widget build(BuildContext context) {
     return _controller.value.isInitialized
         ? AspectRatio(
-      aspectRatio: _controller.value.aspectRatio,
-      child: VideoPlayer(_controller),
-    )
+            aspectRatio: _controller.value.aspectRatio,
+            child: VideoPlayer(_controller),
+          )
         : Center(child: CircularProgressIndicator());
   }
 }
 
-class ScrollableGraph extends StatelessWidget {
+// Grafik Garis Sederhana dengan CustomPaint
+class CustomLineChart extends StatelessWidget {
+  final List<double> data = [3.1, 4.0, 3.5, 5.0, 4.2, 6.0]; // Contoh data
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Container(
-          height: 200,
-          child: LineChartSample1(),
-        ),
-        SizedBox(height: 16),
-        Container(
-          height: 200,
-          child: BarChartSample1(),
-        ),
-        SizedBox(height: 16),
-        Container(
-          height: 200,
-          child: PieChartSample1(),
-        ),
-      ],
+    return Container(
+      height: 200,
+      child: CustomPaint(
+        size: Size(double.infinity, 200),
+        painter: LineChartPainter(data),
+      ),
     );
   }
 }
 
-// Contoh grafik sederhana menggunakan fl_chart
-class LineChartSample1 extends StatelessWidget {
+class LineChartPainter extends CustomPainter {
+  final List<double> data;
+
+  LineChartPainter(this.data);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+
+    double xInterval = size.width / (data.length - 1);
+    double yMax = data.reduce((a, b) => a > b ? a : b);
+    double yScale = size.height / yMax;
+
+    for (int i = 0; i < data.length; i++) {
+      double x = i * xInterval;
+      double y = size.height - data[i] * yScale;
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+
+    canvas.drawPath(path, paint);
+
+    // Gambar titik-titik data
+    final dotPaint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < data.length; i++) {
+      double x = i * xInterval;
+      double y = size.height - data[i] * yScale;
+      canvas.drawCircle(Offset(x, y), 4, dotPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+// Grafik Batang Sederhana dengan CustomPaint
+class CustomBarChart extends StatelessWidget {
+  final List<double> data = [3.1, 4.0, 3.5, 5.0, 4.2, 6.0]; // Contoh data
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+      height: 200,
+      child: CustomPaint(
+        size: Size(double.infinity, 200),
+        painter: BarChartPainter(data),
       ),
-      padding: EdgeInsets.all(16),
-      child: Text('Line Chart Placeholder'),
     );
   }
 }
 
-class BarChartSample1 extends StatelessWidget {
+class BarChartPainter extends CustomPainter {
+  final List<double> data;
+
+  BarChartPainter(this.data);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.green
+      ..style = PaintingStyle.fill;
+
+    double barWidth = size.width / data.length;
+    double yMax = data.reduce((a, b) => a > b ? a : b);
+    double yScale = size.height / yMax;
+
+    for (int i = 0; i < data.length; i++) {
+      double x = i * barWidth;
+      double y = size.height - data[i] * yScale;
+
+      canvas.drawRect(
+        Rect.fromLTWH(x, y, barWidth - 10, size.height - y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+// Grafik Pie Sederhana dengan CustomPaint
+class CustomPieChart extends StatelessWidget {
+  final List<double> data = [3.1, 4.0, 3.5, 5.0, 4.2, 6.0]; // Contoh data
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+      height: 200,
+      child: CustomPaint(
+        size: Size(double.infinity, 200),
+        painter: PieChartPainter(data),
       ),
-      padding: EdgeInsets.all(16),
-      child: Text('Bar Chart Placeholder'),
     );
   }
 }
 
-class PieChartSample1 extends StatelessWidget {
+class PieChartPainter extends CustomPainter {
+  final List<double> data;
+
+  PieChartPainter(this.data);
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Text('Pie Chart Placeholder'),
-    );
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    double total = data.reduce((a, b) => a + b);
+    double startAngle = -90 * (3.141592653589793 / 180); // Mulai dari atas
+
+    for (int i = 0; i < data.length; i++) {
+      paint.color = Colors.primaries[i % Colors.primaries.length];
+      double sweepAngle = (data[i] / total) * 360 * (3.141592653589793 / 180);
+
+      canvas.drawArc(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        startAngle,
+        sweepAngle,
+        true,
+        paint,
+      );
+
+      startAngle += sweepAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
